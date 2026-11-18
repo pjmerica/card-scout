@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Card Scout</title>
+<meta name="description" content="The best credit card sign-up offers ranked by first-year value, card-linked shopping offers, card news and Rakuten cash-back rates. Updated every 4 hours.">
+<style>
+:root{
+  --bg:#f5f6f8;--surface:#fff;--surface-2:#eef0f3;--text:#16181d;--muted:#626873;--line:#dfe2e8;
+  --accent:#1d4ed8;--accent-soft:#dbeafe;--good:#15803d;--good-soft:#dcfce7;--warn:#a16207;--warn-soft:#fef3c7;
+  --violet:#6d28d9;--violet-soft:#ede9fe;--dark:#111;--dark-text:#fff;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111215;--surface:#1a1c20;--surface-2:#24262b;--text:#eef0f3;--muted:#9ba1ab;--line:#2c2f35;
+  --accent:#93b4ff;--accent-soft:#1b2640;--good:#4ade80;--good-soft:#14301e;--warn:#fbbf24;--warn-soft:#3a2d0c;
+  --violet:#c4b5fd;--violet-soft:#2a2342;--dark:#eef0f3;--dark-text:#111;--shadow:none;}}
+:root[data-theme="dark"]{
+  --bg:#111215;--surface:#1a1c20;--surface-2:#24262b;--text:#eef0f3;--muted:#9ba1ab;--line:#2c2f35;
+  --accent:#93b4ff;--accent-soft:#1b2640;--good:#4ade80;--good-soft:#14301e;--warn:#fbbf24;--warn-soft:#3a2d0c;
+  --violet:#c4b5fd;--violet-soft:#2a2342;--dark:#eef0f3;--dark-text:#111;--shadow:none;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:inherit}
+.wrap{max-width:1260px;margin:0 auto;padding:0 16px}
+header{padding:26px 0 6px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+h1{margin:0;font-size:28px;letter-spacing:-.02em}
+h1 span{color:var(--accent)}
+h2{font-size:19px;margin:22px 0 4px}
+.sub{color:var(--muted);margin:4px 0 0;max-width:780px}
+.sub a{color:var(--accent)}
+.theme-btn{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:6px 10px;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin:16px 0 6px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat b{display:block;font-size:21px;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted)}
+nav.tabs{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 13px;font-size:14px;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 10px}
+.controls input[type=search]{flex:1 1 220px;min-width:0;padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--text);font-size:15px}
+.seg{display:inline-flex}
+.seg button{padding:8px 11px;border:1px solid var(--line);background:var(--surface);color:var(--text);font-size:14px;cursor:pointer;border-radius:0}
+.seg button:first-child{border-radius:10px 0 0 10px}.seg button:last-child{border-radius:0 10px 10px 0}
+.seg button:only-child{border-radius:10px}
+.seg button[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:4px 10px;font-size:13px;cursor:pointer}
+.chip.on{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+.section-note{color:var(--muted);font-size:14px;margin:0 0 10px}
+.b{font-size:11.5px;font-weight:600;padding:2px 7px;border-radius:6px;background:var(--surface-2);color:var(--muted);white-space:nowrap;display:inline-block}
+.b.good{background:var(--good-soft);color:var(--good)}.b.warn{background:var(--warn-soft);color:var(--warn)}
+.b.acc{background:var(--accent-soft);color:var(--accent)}.b.new{background:var(--violet-soft);color:var(--violet)}
+.b.dark{background:var(--dark);color:var(--dark-text)}
+.tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface);margin:8px 0 26px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12.5px;color:var(--muted);font-weight:600;background:var(--surface-2)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td small{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:30px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}
+.item h3{margin:0;font-size:15px;line-height:1.35}
+.item h3 a{text-decoration:none}.item h3 a:hover{text-decoration:underline}
+.badges{display:flex;flex-wrap:wrap;gap:5px}
+.why{margin:0;padding:0;list-style:none;font-size:12.5px}
+.why li{padding-left:14px;position:relative}
+.why li:before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:700}
+.why li.w{color:var(--warn)}.why li.w:before{content:"!";color:var(--warn)}
+.meta{color:var(--muted);font-size:12.5px;display:flex;gap:8px;margin-top:auto}
+.meta .score{margin-left:auto}
+.more{display:block;margin:6px auto 30px;padding:10px 22px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer}
+.empty{color:var(--muted);text-align:center;padding:40px 0}
+.playbook,.method{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px;margin:12px 0 30px}
+.play,.method div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px}
+.play h3,.method h3{margin:0 0 5px;font-size:15.5px}
+.play p,.method p{margin:0;color:var(--muted);font-size:14px}
+.play .n{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--accent-soft);color:var(--accent);align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-right:8px}
+.ok{color:var(--good)}.bad{color:var(--warn)}
+footer{color:var(--muted);font-size:13px;padding:14px 0 40px;border-top:1px solid var(--line)}
+footer a{color:var(--accent)}
+@media (max-width:560px){h1{font-size:23px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="top">
+      <div>
+        <h1>Card <span>Scout</span></h1>
+        <p class="sub">The best credit card sign-up offers, ranked by estimated first-year value. Also card-linked shopping offers, card and points news, and Rakuten cash-back rates for clothing and department stores. Looking for the deals themselves? See <a id="dsLink" href="#">Deal Scout</a>. <span id="updated"></span></p>
+      </div>
+      <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">◐ Theme</button>
+    </div>
+    <div class="stats" id="stats"></div>
+  </header>
+  <nav class="tabs" role="tablist" id="tabs"></nav>
+  <main id="main"></main>
+  <footer>Card values are estimates, and offers change or end without notice. Read the issuer's terms before applying. Never carry a balance for rewards.
+    Data: <a href="cards.json">cards.json</a> · <a href="offers.csv">offers.csv</a></footer>
+</div>
+<script>
+const DATA = /*__DATA__*/null;
+(function theme(){
+  const root=document.documentElement, btn=document.getElementById('themeBtn');
+  let saved=null; try{saved=localStorage.getItem('cs-theme')}catch(e){}
+  if(saved) root.setAttribute('data-theme',saved);
+  btn.onclick=()=>{const cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    const next=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',next); try{localStorage.setItem('cs-theme',next)}catch(e){}};
+})();
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtAge=d=>d<1/24?'just now':d<1?Math.round(d*24)+'h ago':Math.round(d)+'d ago';
+const TABS=[{id:'offers',label:'💳 Sign-up offers'},{id:'news',label:'📰 Card news & offers'},{id:'cashback',label:'💸 Cash back'},
+  {id:'playbook',label:'📋 Playbook'},{id:'how',label:'⚙️ How it works'}];
+const NEWS_CATS=['Shopping & Card-Linked Offers','Sign-up Bonuses','Bank & Brokerage Bonuses','Points, Awards & Transfers','Card & Points News'];
+let state={tab:'offers',q:'',cardType:'personal',limit:50,cats:new Set(),newOnly:false,noFee:false,reachable:false};
+try{const t=localStorage.getItem('cs-tab'); if(TABS.some(x=>x.id===t)) state.tab=t;}catch(e){}
+const matchQ=t=>!state.q.trim()||t.toLowerCase().includes(state.q.trim().toLowerCase());
+
+function header(){
+  document.getElementById('dsLink').href=DATA.deal_scout_url;
+  document.getElementById('updated').textContent='Updated '+new Date(DATA.generated).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})+'.';
+  const c=DATA.counts;
+  document.getElementById('stats').innerHTML=[[c.personal,'personal card offers'],[c.business,'business card offers'],
+    [c.value_up,'offers up in value'],[c.news,'news & offers'],[c.rakuten,'cash-back rates'],[`${c.sources_ok}/${c.sources_total}`,'sources online']]
+    .map(([v,l])=>`<div class="stat"><b>${v??0}</b><small>${l}</small></div>`).join('');
+}
+function renderTabs(){
+  document.getElementById('tabs').innerHTML=TABS.map(t=>`<button role="tab" data-tab="${t.id}" aria-selected="${state.tab===t.id}">${t.label}</button>`).join('');
+  document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{state.tab=b.dataset.tab;state.q='';state.limit=50;state.cats.clear();
+    try{localStorage.setItem('cs-tab',state.tab)}catch(e){} renderTabs(); render();});
+}
+function bindSearch(){
+  const qi=document.getElementById('q'); if(!qi) return;
+  qi.oninput=e=>{state.q=e.target.value; state.limit=50; const p=e.target.selectionStart; render(); const n=document.getElementById('q'); if(n){n.focus(); n.setSelectionRange(p,p);}};
+}
+
+function renderOffers(main){
+  let list=DATA.offers.filter(o=>(state.cardType==='business')===!!o.business).filter(o=>matchQ(o.name+' '+o.offer));
+  if(state.noFee) list=list.filter(o=>o.annual_fee===0||o.fee_waived);
+  if(state.reachable) list=list.filter(o=>o.spend&&o.spend<=5000);
+  const fee=o=>o.annual_fee==null?'':o.annual_fee===0?'$0':`$${o.annual_fee}${o.fee_waived?' <small>(waived yr 1)</small>':''}`;
+  main.innerHTML=`<div class="controls">
+      <input type="search" id="q" placeholder="Search cards or issuers…" value="${esc(state.q)}">
+      <div class="seg" role="group" aria-label="Card type"><button data-v="personal" aria-pressed="${state.cardType==='personal'}">Personal</button><button data-v="business" aria-pressed="${state.cardType==='business'}">Business</button></div>
+      <div class="seg"><button id="noFee" aria-pressed="${state.noFee}">No fee yr 1</button></div>
+      <div class="seg"><button id="reach" aria-pressed="${state.reachable}">Min spend ≤ $5k</button></div>
+    </div>
+    <p class="section-note">Ranked by estimated first-year value: the bonus plus usable credits, minus the annual fee. Frequent Miler's estimate is used where it exists, otherwise points × a conservative cents-per-point plus cash, minus the fee. Extra weight goes to cards on Doctor of Credit's best-offers list, elevated offers, offers worth more than before, shopping perks, and minimum spends a holiday budget can reach. Fee and spend come from Doctor of Credit and are blank for cards it doesn't list.</p>
+    <div class="tblwrap"><table><thead><tr><th>#</th><th>Card</th><th>Offer</th><th class="n">1st-yr value</th><th class="n">Min spend</th><th class="n">Annual fee</th><th>Why it ranks</th></tr></thead><tbody>
+    ${list.slice(0,state.limit).map((o,n)=>`<tr><td class="n">${n+1}</td>
+      <td><a href="${esc(o.link)}" target="_blank" rel="noopener"><b>${esc(o.name)}</b></a><br>
+        ${o.value_up?'<span class="b good">Value up</span> ':''}${o.new_offer?'<span class="b new">New</span> ':''}${o.elevated?'<span class="b good">Elevated</span> ':''}${o.doc_pick?'<span class="b acc">DoC pick</span> ':''}${o.targeted?'<span class="b warn">Targeted</span> ':''}${o.clothing_perk?'<span class="b">Shopping perk</span>':''}</td>
+      <td>${esc(o.offer)}</td><td class="n"><b>${o.value?'$'+o.value.toLocaleString():''}</b>${o.value_is_estimate&&o.value?' <small>est.</small>':''}</td>
+      <td class="n">${o.spend?'$'+o.spend.toLocaleString()+(o.months?` <small>/ ${o.months} mo</small>`:''):''}</td><td class="n">${fee(o)}</td>
+      <td><small>${esc(o.reasons.slice(1).join(' · '))}</small>${o.details?`<br><small title="${esc(o.details)}">Credits: ${esc(o.details.slice(0,120))}${o.details.length>120?'…':''}</small>`:''}</td></tr>`).join('')||'<tr><td colspan="7" class="empty">No cards match.</td></tr>'}
+    </tbody></table></div>
+    ${list.length>state.limit?`<button class="more" id="more">Show more (${list.length-state.limit} left)</button>`:''}`;
+  main.querySelectorAll('.seg button[data-v]').forEach(b=>b.onclick=()=>{state.cardType=b.dataset.v;state.limit=50;render();});
+  document.getElementById('noFee').onclick=()=>{state.noFee=!state.noFee;render();};
+  document.getElementById('reach').onclick=()=>{state.reachable=!state.reachable;render();};
+  const m=document.getElementById('more'); if(m) m.onclick=()=>{state.limit+=50;render();};
+  bindSearch();
+}
+
+function newsHTML(i){
+  const b=[];
+  if(i.is_new) b.push('<span class="b new">NEW</span>');
+  b.push(`<span class="b acc">${esc(i.card_category)}</span>`);
+  if(i.bonus_value) b.push(`<span class="b good">≈$${i.bonus_value.toLocaleString()} value</span>`);
+  if(i.votes) b.push(`<span class="b">👍 ${i.votes>0?'+':''}${i.votes}</span>`);
+  if(i.is_bf) b.push('<span class="b dark">Holiday</span>');
+  const why=i.reasons.slice(0,3).map(r=>`<li>${esc(r)}</li>`).join('')+i.warnings.map(w=>`<li class="w">${esc(w)}</li>`).join('');
+  return `<article class="item"><h3><a href="${esc(i.link)}" target="_blank" rel="noopener">${esc(i.title)}</a></h3>
+    <div class="badges">${b.join('')}</div>${why?`<ul class="why">${why}</ul>`:''}
+    <div class="meta"><span>${esc(i.source)}${i.sources.length>1?' +'+(i.sources.length-1):''}${i.published?' · '+fmtAge(i.age_days):''}</span><span class="score" title="Card Scout score">★ ${Math.round(i.score)}</span></div></article>`;
+}
+function renderNews(main){
+  let list=DATA.news.filter(i=>matchQ(i.title+' '+i.summary));
+  if(state.cats.size) list=list.filter(i=>state.cats.has(i.card_category));
+  if(state.newOnly) list=list.filter(i=>i.is_new);
+  main.innerHTML=`<div class="controls"><input type="search" id="q" placeholder="Search news, issuers, stores…" value="${esc(state.q)}">
+      <div class="seg"><button id="newBtn" aria-pressed="${state.newOnly}">New since last check</button></div></div>
+    <div class="chips">${NEWS_CATS.map(c=>`<button class="chip ${state.cats.has(c)?'on':''}" data-v="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+    <p class="section-note">From Doctor of Credit, The Points Guy, One Mile at a Time, Frequent Miler, Upgraded Points and more, plus Slickdeals card-offer searches. Card-linked offers and portal deals at clothing and department stores rank higher. Showing ${Math.min(list.length,state.limit)} of ${list.length}.</p>
+    ${list.length?`<div class="grid">${list.slice(0,state.limit).map(newsHTML).join('')}</div>`:'<div class="empty">Nothing matches.</div>'}
+    ${list.length>state.limit?`<button class="more" id="more">Show more (${list.length-state.limit} left)</button>`:''}`;
+  main.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{state.cats.has(c.dataset.v)?state.cats.delete(c.dataset.v):state.cats.add(c.dataset.v);render();});
+  document.getElementById('newBtn').onclick=()=>{state.newOnly=!state.newOnly;render();};
+  const m=document.getElementById('more'); if(m) m.onclick=()=>{state.limit+=50;render();};
+  bindSearch();
+}
+
+function renderCashback(main){
+  const list=DATA.rakuten.filter(r=>matchQ(r.store));
+  main.innerHTML=`<div class="controls"><input type="search" id="q" placeholder="Search stores…" value="${esc(state.q)}"></div>
+    <p class="section-note">Current Rakuten cash back at clothing and department stores, read live from Rakuten. <b>Elevated</b> means above that store's usual rate in Card Scout's history. Stack it with a card-linked offer and your best card (see the Playbook).</p>
+    <div class="tblwrap"><table><thead><tr><th>Store</th><th class="n">Cash back now</th><th class="n">Usual</th><th class="n">Highest seen</th></tr></thead><tbody>
+    ${list.map(r=>`<tr><td><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.store)}</a>${r.elevated?' <span class="b good">Elevated</span>':''}${r.pct>=8?' <span class="b acc">Strong</span>':''}</td>
+      <td class="n"><b>${esc(r.rate)}</b></td><td class="n">${r.usual!=null?r.usual+'%':''}</td><td class="n">${r.max_seen!=null?r.max_seen+'%':''}</td></tr>`).join('')||'<tr><td colspan="4" class="empty">No stores match.</td></tr>'}
+    </tbody></table></div>`;
+  bindSearch();
+}
+function renderPlaybook(main){
+  main.innerHTML=`<div class="playbook">${DATA.playbook.map((p,n)=>`<div class="play"><h3><span class="n">${n+1}</span>${esc(p.title)}</h3><p>${esc(p.body)}</p></div>`).join('')}</div>`;
+}
+function renderHow(main){
+  const M=[
+    ['Sign-up offer value','Frequent Miler\'s first-year value estimate where available: bonus at their point valuations, plus credits at a realistic value, minus the fee. Otherwise: points × a conservative cents-per-point by currency, plus cash, minus a first-year fee that isn\'t waived.'],
+    ['Offer score','Value ÷ 40 (capped at 70), +15 if on Doctor of Credit\'s best-offers list, +10 elevated, +10 if the value is above the best Card Scout has seen before, +4 new offer, +6 shopping perk (Lululemon or Saks credits, purchase protection…), +6 if the minimum spend is $4k or less, −10 if it\'s $15k or more, −4 targeted.'],
+    ['News score','A bonus value read from the title (points × 1.2¢ or cash; award redemptions excluded), "hot" words (elevated, card-linked offers, portals, 5% categories, protections), a clothing or department store named, comments and votes, and multiple sources. A dead or expired post scores −30. Scores halve every 10 days.'],
+    ['Cash back','Rakuten store pages are found from the store name and checked against the page title. Rates are tracked between runs: "Elevated" means above that store\'s usual (median) rate.'],
+    ['Memory','Each run reads the previous run\'s history.json from this site. That gives value-up and new offers, elevated rates, and NEW news.'],
+  ];
+  const s=[...DATA.sources].sort((a,b)=>b.ok-a.ok||b.count-a.count);
+  main.innerHTML=`<h2>How the ranking works</h2><div class="method">${M.map(([t,p])=>`<div><h3>${esc(t)}</h3><p>${esc(p)}</p></div>`).join('')}</div>
+    <h2>Sources (${DATA.counts.sources_ok}/${DATA.counts.sources_total} online)</h2>
+    <div class="tblwrap"><table><thead><tr><th>Source</th><th>Type</th><th>Status</th><th class="n">Items</th></tr></thead><tbody>
+    ${s.map(x=>`<tr><td><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a></td><td>${esc(x.kind)}</td><td class="${x.ok?'ok':'bad'}">${x.ok?'online':'unavailable'}</td><td class="n">${x.count}</td></tr>`).join('')}
+    </tbody></table></div>`;
+}
+function render(){
+  const main=document.getElementById('main');
+  ({offers:renderOffers,news:renderNews,cashback:renderCashback,playbook:renderPlaybook,how:renderHow}[state.tab])(main);
+}
+if(!DATA){document.getElementById('main').innerHTML='<div class="empty">No data yet. Run card_scout.py.</div>';}
+else {header(); renderTabs(); render();}
+</script>
+</body>
+</html>
