@@ -41,6 +41,24 @@ def test_card_linked_offer_at_clothing_store_ranks_higher():
     assert a.score > b.score and a.card_category == "Shopping & Card-Linked Offers" and "Nordstrom" in a.retailers
 
 
+def test_american_express_is_not_the_store_express():
+    it = item("Amex Offers: NJ Transit $8 off $40 (works at EWR)")
+    assert not it.retailers and not any("department store" in r for r in it.reasons)
+
+
+def test_reasons_are_readable_labels():
+    it = item("Capital One Shopping/Offers: Up To 18.5% Back On Giftcards.com")
+    assert "Shopping portal deal" in it.reasons and "5% / rotating category" not in it.reasons
+    alliant = item("Alliant Credit Union $200 Checking Bonus", "Earn via Rakuten too")
+    assert "Shopping portal deal" not in alliant.reasons  # summary mentions don't count for title-only terms
+
+
+def test_doc_only_offer_text():
+    d = {"name": "Chase Southwest 80,000 – 90,000 Points",
+         "text": "Read our review Earn 80,000 points after $1,000 spend in 3 months. Another option is 90,000."}
+    assert cards._doc_offer(d) == "Earn 80,000 points after $1,000 spend in 3 months."
+
+
 def test_dead_posts_penalized():
     assert item("[Dead] Citi 75K offer").score < item("Citi 75K offer").score
 

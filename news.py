@@ -21,7 +21,7 @@ from models import Item
 REL_RE = re.compile("|".join(C.CARD_RELEVANCE), re.I)
 JUNK_RE = re.compile(C.CARD_JUNK, re.I)
 CAT_RES = [(name, re.compile("|".join(p), re.I)) for name, p in C.CARD_CATEGORIES]
-HOT_RES = [(re.compile(p, re.I), pts) for p, pts in C.CARD_HOT_TERMS.items()]
+HOT_RES = [(re.compile(p, re.I), pts, label, where) for p, pts, label, where in C.CARD_HOT_TERMS]
 DEAD_RE = re.compile(C.CARD_DEAD_TERMS, re.I)
 RETAIL_RE = re.compile(r"(?<![\w'])(?:" + "|".join(re.escape(r) for r in sorted(C.SHOPPING_RETAILERS, key=len, reverse=True))
                        + r")(?![\w'])", re.I)
@@ -54,12 +54,11 @@ def score(it: Item) -> None:
         it.bonus_value = val
         s += min(45, val / 25)
         it.reasons.append(f"≈${val:,} bonus value")
-    for rx, pts in HOT_RES:
-        m = rx.search(text)
-        if m:
+    for rx, pts, label, where in HOT_RES:
+        if rx.search(it.title if where == "title" else text):
             s += pts
-            it.reasons.append(m.group(0).strip().capitalize())
-    it.retailers = sorted({m.group(0).title() for m in RETAIL_RE.finditer(text)})[:4]
+            it.reasons.append(label)
+    it.retailers = sorted({m.group(0).title() for m in RETAIL_RE.finditer(it.title)})[:4]
     if it.retailers:
         s += C.SHOPPING_RETAILER_BONUS
         it.reasons.append("Clothing/department store: " + ", ".join(it.retailers[:2]))

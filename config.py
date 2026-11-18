@@ -77,17 +77,19 @@ CARD_CATEGORIES = [
       r"money market", r"credit union"]),
 ]
 
-# Score bonuses for words in a news title/summary
-CARD_HOT_TERMS = {
-    r"elevated|increased bonus|all-time high|highest (?:ever|offer|bonus)|best (?:ever|offer)|record": 15,
-    r"limited[- ]time|ends soon|expires": 5,
-    r"no annual fee|\$0 annual fee": 6,
-    r"black friday|cyber monday|holiday shopping|gift": 10,
-    r"amex offers?|chase offers?|capital one offers?|citi merchant|bankamerideals": 8,
-    r"rakuten|topcashback|shopping portal|portal bonus": 8,
-    r"5%|rotating|quarterly categor": 7,
-    r"price protection|purchase protection|return protection|extended warranty": 6,
-}
+# Score bonuses: (regex, points, reason shown on the site, where to look).
+# "title" = post title only (summaries mention everything and caused false reasons); "text" = title + summary.
+CARD_HOT_TERMS = [
+    (r"elevated|increased bonus|all-time high|highest (?:ever|offer|bonus)|best (?:ever|offer)|record", 15,
+     "Elevated / all-time-high offer", "text"),
+    (r"limited[- ]time|ends soon|ending soon|expires", 5, "Limited time", "title"),
+    (r"no annual fee|\$0 annual fee", 6, "No annual fee", "text"),
+    (r"black friday|cyber monday|holiday shopping|\bgift", 10, "Holiday & gift shopping", "title"),
+    (r"amex offers?|chase offers?|capital one offers?|citi merchant|bankamerideals", 8, "Card-linked offer", "title"),
+    (r"rakuten|topcashback|shopping portal|portal bonus|capital one shopping", 8, "Shopping portal deal", "title"),
+    (r"(?<![\d.])5%|rotating|quarterly categor", 7, "5% / rotating category", "title"),
+    (r"price protection|purchase protection|return protection|extended warranty", 6, "Purchase / return protection", "text"),
+]
 CARD_DEAD_TERMS = r"\b(?:dead|expired|ended|no longer available|discontinued)\b|\[expired\]|\[dead\]"
 
 # Clothing / department stores: a card-linked offer or portal post naming one gets SHOPPING_RETAILER_BONUS
@@ -95,9 +97,9 @@ SHOPPING_RETAILERS = [
     "nordstrom", "nordstrom rack", "macy's", "macys", "kohl's", "kohls", "saks", "saks off 5th", "neiman marcus",
     "bloomingdale's", "jcpenney", "dillard's", "old navy", "gap", "banana republic", "j.crew", "jcrew", "levi's",
     "nike", "adidas", "under armour", "lululemon", "the north face", "patagonia", "columbia", "uniqlo", "h&m",
-    "zara", "express", "abercrombie", "american eagle", "ll bean", "l.l.bean", "lands' end", "eddie bauer",
+    "zara", "express.com", "abercrombie", "american eagle", "ll bean", "l.l.bean", "lands' end", "eddie bauer",
     "rei", "dick's", "foot locker", "finish line", "zappos", "dsw", "new balance", "puma", "ugg", "steve madden",
-    "coach", "kate spade", "michael kors", "ralph lauren", "calvin klein", "tommy hilfiger", "brooks brothers",
+    "coach outlet", "kate spade", "michael kors", "ralph lauren", "calvin klein", "tommy hilfiger", "brooks brothers",
     "jos. a. bank", "men's wearhouse", "bonobos", "everlane", "madewell", "anthropologie", "free people",
     "urban outfitters", "athleta", "fabletics", "loft", "ann taylor", "carter's", "children's place", "asos",
     "shein", "revolve", "shopbop", "farfetch", "ssense", "allbirds", "hoka", "skechers", "crocs", "vans",

@@ -30,8 +30,8 @@ POINT_VALUES = [
     (r"southwest", 1.3), (r"alaska|atmos", 1.3), (r"jetblue", 1.2), (r"avios|british airways|aer lingus|iberia", 1.3),
 ]
 
-CLOTHING_PERK = re.compile(r"lululemon|saks|nordstrom|shopping|purchase protection|return protection|"
-                           r"walmart\+?|amazon|target|apparel|clothing|department store|ralph lauren|cashback", re.I)
+CLOTHING_PERK = re.compile(r"lululemon|saks|nordstrom|purchase protection|return protection|"
+                           r"walmart\+?|amazon|target|apparel|clothing|department store|ralph lauren", re.I)
 ELEVATED = re.compile(r"highest|all[- ]time high|best (?:ever|offer)|increased|elevated|record|limited[- ]time", re.I)
 STOP = {"card", "credit", "the", "from", "visa", "infinite", "signature", "world", "elite", "mastercard", "®",
         "™", "℠", "american", "express", "rewards", "of", "bank", "business", "&", "-", "–", "personal"}
@@ -134,6 +134,13 @@ def parse_doc() -> list[dict]:
     return out
 
 
+def _doc_offer(d: dict) -> str:
+    """First sentence of Doctor of Credit's write-up (the name alone repeats the card)."""
+    t = re.sub(r"^\s*Read our review(?: of this offer)?\s*", "", d.get("text") or "")
+    first = re.split(r"(?<=[.!])\s", t)[0].strip()
+    return (first[:160] + "…") if len(first) > 160 else (first or d["name"])
+
+
 def _match(name: str, cands: list[dict], business: bool, taken: set) -> dict | None:
     a = _tokens(name)
     best, best_s = None, 0.0
@@ -163,7 +170,7 @@ def best_card_offers() -> tuple[list[dict], dict]:
     matched_doc = {id(v) for v in doc_for.values()}
     for d in doc:  # DoC picks FM doesn't list
         if id(d) not in matched_doc:
-            offers.append({"name": d["name"], "offer": d["name"], "fm_value": None, "business": d["business"],
+            offers.append({"name": d["name"], "offer": _doc_offer(d), "fm_value": None, "business": d["business"],
                            "targeted": d["targeted"], "variable": False, "details": "", "link": d["link"], "doc": d})
     ranked = []
     for o in offers:

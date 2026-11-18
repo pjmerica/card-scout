@@ -82,7 +82,11 @@ td small{color:var(--muted)}
 .ok{color:var(--good)}.bad{color:var(--warn)}
 footer{color:var(--muted);font-size:13px;padding:14px 0 40px;border-top:1px solid var(--line)}
 footer a{color:var(--accent)}
-@media (max-width:560px){h1{font-size:23px}.grid{grid-template-columns:1fr}}
+@media (max-width:560px){
+  header{padding-top:16px}.top{flex-wrap:nowrap;gap:10px}.theme-btn{flex:none;padding:4px 8px;font-size:12px}
+  .sub{font-size:13.5px}.stats{grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 4px}
+  .stat{padding:7px 9px;border-radius:10px}.stat b{font-size:16px}.stat small{font-size:11px;line-height:1.2;display:block}
+  h1{font-size:23px}.grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
