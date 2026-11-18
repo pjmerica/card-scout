@@ -59,7 +59,9 @@ CARD_JUNK = (r"wallet|card holder|rfid|sd card|microsd|graphics card|memory card
 # First matching category wins (order matters: awards before sign-up so "150K points stays" isn't a bonus)
 CARD_CATEGORIES = [
     ("Points, Awards & Transfers",
-     [r"transfer bonus", r"\(1:\d", r"award", r"buy points", r"buy miles", r"redeem", r"redemption",
+     # "redeem"/"redemption" only with points/miles/award context ("Two Redemptions Per Day" on a gas promo isn't one)
+     [r"transfer bonus", r"\(1:\d", r"award", r"buy points", r"buy miles",
+      r"redeem(?:ing)? (?:your )?(?:points|miles|for (?:travel|flights|hotels))", r"(?:points?|miles|award) redemptions?",
       r"one-way", r"round-?trip", r"\bstays?\b", r"\bi fly\b", r"transfer partner"]),
     ("Shopping & Card-Linked Offers",
      [r"amex offers?", r"chase offers?", r"capital one offers?", r"citi merchant", r"bankamerideals",

@@ -59,6 +59,12 @@ def test_doc_only_offer_text():
     assert cards._doc_offer(d) == "Earn 80,000 points after $1,000 spend in 3 months."
 
 
+def test_redemption_word_alone_is_not_awards():
+    gas = item("[Extended 1/15/27] OnePay: $1 Cashback Per Gallon Of Gas Every Wednesday (50 Gallons, Two Redemptions Per Day)")
+    assert gas.card_category == "Shopping & Card-Linked Offers"
+    assert item("How Are Hotels Paid When You Redeem Points, And For Elite Perks?").card_category == "Points, Awards & Transfers"
+
+
 def test_dead_posts_penalized():
     assert item("[Dead] Citi 75K offer").score < item("Citi 75K offer").score
 
