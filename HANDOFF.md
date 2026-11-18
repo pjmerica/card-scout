@@ -5,6 +5,15 @@
 
 Everything you need to keep this running, change it, or extend it.
 
+> **Read first: the owner's decisions**
+> - **2026-11-18: runs until January 2027, no keepalive.** GitHub disables scheduled workflows in public repos 60 days
+>   after the last commit (~2027-01-17). That's the intended end. Any new commit pushes the date out, so after a December
+>   change, tell the owner or disable the workflow by hand.
+> - **2026-11-18: cards stay separate from Deal Scout.** The only link is Deal Scout reading this site's `cards.json` for badges (§4b).
+> - Deferred by the owner: parsing their own Amex/Chase offers (§8). Ask before starting.
+> - Deal Scout's `HANDOFF.md` has the shared lessons (Windows, Shopify throttling, heredoc pitfalls) and `tools/shots.js`,
+>   a real-browser check (headless Chrome) that screenshots **both** sites. Use it after any UI change.
+
 ---
 
 ## 1. What this is and where it came from
@@ -28,8 +37,9 @@ Black Friday timing, and offers reachable with holiday spending.
 | Task | Command / place |
 |---|---|
 | Run locally | `py -X utf8 card_scout.py --open` (or `run_card_scout.bat`). Takes about 20 s |
-| Tests | `py -X utf8 tests/test_cards.py` (logic) · `node tests/smoke.js site/index.html` (renders every tab and filter against fresh data; fails on empty output, `undefined` or `NaN`) |
-| Deploy | `.github/workflows/cards.yml`: on push to `main`, every 4 h (`43 */4 * * *`), or manually (`gh workflow run cards.yml`). Steps: tests → scrape → smoke test → job summary → Pages deploy. **A failing test or smoke test blocks the deploy**, so the live site keeps its last good version |
+| Tests | `py -X utf8 tests/test_cards.py` (12 logic tests) · `node tests/smoke.js site/index.html` (renders every tab and filter against fresh data, then clicks every tab, chip and button; fails on a throw, empty output, `undefined` or `NaN`) |
+| Deploy | `.github/workflows/cards.yml`: on push to `main`, every 4 h (`43 */4 * * *`), or manually (`gh workflow run cards.yml`). Steps: tests → scrape → smoke test → job summary → health (always) → Pages deploy. **A failing test or smoke test blocks the deploy**, so the live site keeps its last good version |
+| Health issue | `tools/health.py` (§4c). Test the alert with `gh workflow run cards.yml -f health_test=true`; the next normal run closes the issue |
 | Pages | Source is "GitHub Actions" (`build_type=workflow`). `site/` is gitignored, and nothing generated is committed |
 | Secrets | Optional `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` |
 
