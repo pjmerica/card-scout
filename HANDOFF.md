@@ -50,7 +50,8 @@ The script also reconfigures stdout itself. `py -I` (isolated) ignores `PYTHONIO
 | `models.py` | `Item` dataclass for news posts |
 | `config.py` | **All the knobs**: feeds, Slickdeals queries, relevance and junk regexes, categories, hot-word weights, shopping retailers, Rakuten store list, playbook text |
 | `template.html` | The page. `card_scout.py` replaces `/*__DATA__*/null` with the JSON payload |
-| `tests/` | `test_cards.py`, `smoke.js` |
+| `tests/` | `test_cards.py`, `smoke.js` (renders every tab, then clicks every control) |
+| `tools/health.py` | Breakage alerts (the self-closing health issue, §4c) |
 
 ---
 
@@ -111,6 +112,22 @@ The script also reconfigures stdout itself. `py -I` (isolated) ignores `PYTHONIO
 - **Reddit:** anonymous `.json`/`.rss` requests return 403 or 429 since 2025, so it only works with OAuth app keys.
 
 ---
+
+## 4b. Deal Scout reads this site's data (a contract)
+
+Since 2026-11-18, every Deal Scout build fetches `https://pjmerica.github.io/card-scout/cards.json` for its stack-hint badges
+(`deal-scout/stacks.py`). Keep these fields stable, or update `stacks.py` in the same change:
+- `rakuten[]`: `store`, `rate`, `pct`, `url`, `elevated`
+- `news[]`: `title`, `link`, `card_category` ("Shopping & Card-Linked Offers"), `retailers`, `age_days`, `warnings`
+
+If Card Scout is down, Deal Scout just shows no badges and notes it in its health check.
+
+## 4c. Breakage alerts
+
+`tools/health.py` runs as the last CI step, even when earlier steps fail. It keeps one GitHub issue, **"Site health: needs
+attention"**: opened when a source falls below its floor (Frequent Miler 150+, Doctor of Credit 40+, Rakuten 70+, news 50+,
+80%+ of sources online, Reddit excluded) or a test fails. It updates when the problem list changes and closes itself when the
+next build passes. No open issue means nothing to do. The workflow needs `permissions: issues: write`.
 
 ## 5. Memory between runs: `history.py`
 - At start, in CI, it downloads `https://pjmerica.github.io/card-scout/history.json` (the previous deploy's copy).
