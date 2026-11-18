@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "43 */4 * * *"   # every 4 hours (GitHub may start scheduled runs late)
   workflow_dispatch:
+    inputs:
+      health_test:
+        description: "Raise a test problem to check that the health issue opens (the next normal run closes it)"
+        type: boolean
+        default: false
   push:
     branches: [main]
 
@@ -55,6 +60,7 @@ jobs:
           TESTS_OUTCOME: ${{ steps.tests.outcome }}
           SCRAPE_OUTCOME: ${{ steps.scrape.outcome }}
           SMOKE_OUTCOME: ${{ steps.smoke.outcome }}
+          HEALTH_TEST: ${{ inputs.health_test && '1' || '' }}
         run: python tools/health.py --issue
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
