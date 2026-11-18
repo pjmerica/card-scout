@@ -6,9 +6,9 @@
 Everything you need to keep this running, change it, or extend it.
 
 > **Read first: the owner's decisions**
-> - **2026-11-18: runs until January 2027, no keepalive.** GitHub disables scheduled workflows in public repos 60 days
->   after the last commit (~2027-01-17). That's the intended end. Any new commit pushes the date out, so after a December
->   change, tell the owner or disable the workflow by hand.
+> - **2026-11-18: runs until January 17, 2027, no keepalive.** Enforced by the `guard` job in `cards.yml` (`END_DATE`):
+>   scheduled runs do nothing after that date, while manual runs and pushes still work. GitHub would also disable the schedule
+>   60 days after the last commit. To extend, change `END_DATE` (ask the owner first).
 > - **2026-11-18: cards stay separate from Deal Scout.** The only link is Deal Scout reading this site's `cards.json` for badges (§4b).
 > - Deferred by the owner: parsing their own Amex/Chase offers (§8). Ask before starting.
 > - Deal Scout's `HANDOFF.md` has the shared lessons (Windows, Shopify throttling, heredoc pitfalls) and `tools/shots.js`,
