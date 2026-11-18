@@ -81,9 +81,16 @@ def reddit_items() -> list[Item]:
     return out
 
 
+
+def sd_url(q: str) -> str:
+    """Slickdeals search URL; multi-word queries are quoted for a phrase match ("free people" otherwise
+    matched any post with both words)."""
+    return C.SLICKDEALS_SEARCH_URL.format(q=quote_plus(f'"{q}"' if " " in q else q))
+
+
 def gather_news() -> tuple[list[Item], list[dict]]:
     jobs = [(f["url"], f["name"], f.get("boost", 0)) for f in C.FEEDS]
-    jobs += [(C.SLICKDEALS_SEARCH_URL.format(q=quote_plus(q)), f"Slickdeals: {q}", 0) for q in C.SLICKDEALS_QUERIES]
+    jobs += [(sd_url(q), f"Slickdeals: {q}", 0) for q in C.SLICKDEALS_QUERIES]
     items, status = [], []
 
     def run(job):
